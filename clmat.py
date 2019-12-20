@@ -414,6 +414,8 @@ class Computer(object):
         try:
             result = self._programs[kernel_name][kernel_opts]
         except KeyError:
+            kernel_source = self.get_kernel_source(kernel_name, **kwargs)
+
             compile_opts = self.get_include_opts()
             for k in sorted(kwargs):
                 if k[0:5] == 'DTYPE':
@@ -426,8 +428,9 @@ class Computer(object):
                     pass
                 else:
                     compile_opts += " -D%s=%s " % (k, kwargs[k])
+                    if(isinstance(kwargs[k], str)):
+                        kernel_source = kernel_source.replace(k, kwargs[k])
 
-            kernel_source = self.get_kernel_source(kernel_name, **kwargs)
             try:
                 kernel_program = cl.Program(self._context,
                                             kernel_source).build(compile_opts)
