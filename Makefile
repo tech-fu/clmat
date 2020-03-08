@@ -7,10 +7,10 @@ doc/index.html: epydoc.conf clmat.py
 	epydoc --html --config=$< -v
 
 test: unittests.py
-	python2 -m pytest -r fEx $<
+	python -m pytest -r fEx $<
 
 testx: unittests.py
-	python2 -m pytest $< --assert='plain' -v -s -x -r fEx
+	python -m pytest $< --assert='plain' -v -s -x -r fEx
 
 
 PROFILE_ARGS = -f m+m -t 1000 -c -A 2048x2048
