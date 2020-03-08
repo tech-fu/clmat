@@ -2227,11 +2227,11 @@ class Mat(object):
         """other*self"""
         return self._op('*', other, reverse=True)
 
-    def __div__(self, other):
+    def __truediv__(self, other):
         """self//other"""
         return self._op('/', other)
 
-    def __rdiv__(self, other):
+    def __rtruediv__(self, other):
         """other//self"""
         return self._op('/', other, reverse=True)
 
