@@ -642,7 +642,7 @@ def main(raw_args):
 
     if args.memory > 0:
         assert len(computers) == 1  # Must use only one computer.
-        c_key = computers.keys()[0]
+        c_key = list(computers.keys())[0]
         clc = computers[c_key]
         A = test_vars['A']
         sys.stdout.write('Computer %s transfered %d x  M(A[%s]).NP in  ' %
@@ -662,7 +662,7 @@ def main(raw_args):
 
     if False:
         assert len(computers) == 1  # Must use only one computer.
-        c_key = computers.keys()[0]
+        c_key = list(computers.keys())[0]
 
         clc = computers[c_key]
 

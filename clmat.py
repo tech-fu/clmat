@@ -977,7 +977,7 @@ class Computer(object):
             'reduce_2d', REDUCTION=REDUCTION_ENUM[function], AXIS=axis,
             DTYPE_OUT=out.dtype, DTYPE_M1=mat1.dtype).reduce_2d
 
-        gws = map(int, out.shape)
+        gws = list(map(int, out.shape))
         lws = [1, 1]
         if self.device.type == CPU:
             pass
@@ -2118,7 +2118,7 @@ class Mat(object):
 
     ##### Object Methods #####
 
-    def __nonzero__(self):
+    def __bool__(self):
         """Needed to allow scalar==self and scalar!=self."""
         # TODO change this once you know where it fails.
         raise MissingOperationError(
