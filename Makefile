@@ -7,10 +7,10 @@ doc/index.html: epydoc.conf clmat.py
 	epydoc --html --config=$< -v
 
 test: unittests.py
-	python -m pytest -r fEx $<
+	python -B -m pytest -r fEx $<
 
 testx: unittests.py
-	python -m pytest $< --assert='plain' -v -s -x -r fEx
+	python -B -m pytest $< --assert='plain' -v -s -x -r fEx
 
 
 PROFILE_ARGS = -f m+m -t 1000 -c -A 2048x2048
@@ -22,7 +22,7 @@ profile: pycallgraph.png
 	${IMAGEVIEW} $<
 
 profile.dat: testnumeric.py clmat.py
-	python -m cProfile -o $@ ./$< ${PROFILE_ARGS}
+	python -B -m cProfile -o $@ ./$< ${PROFILE_ARGS}
 
 profile.png: profile.dat
 	gprof2dot -f pstats $< | dot -Tpng -o $@

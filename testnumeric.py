@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python -B
 # -*- coding: utf-8 -*-
 """
 Created on Apr 2014
@@ -12,7 +12,7 @@ import sys
 import argparse
 from time import time
 import numpy as np
-from clmat import Computer, Mat, CPU, GPU, DEVICE_TYPE_MAP, REDUCTION_ENUM
+from clmat import HAS_PYOPENCL, CPU, GPU, DEVICE_TYPE_MAP, REDUCTION_ENUM, Computer, Mat, get_all_devices
 import warnings
 
 # Verbose levels vl must be >= to this
@@ -133,7 +133,7 @@ def parse_args(raw_args):
     parser.add_argument(
         '-g', '--gpu', dest='test_gpu',
         required=False, action='count', default=0,
-        help='Test gpu based computations.')
+        help='Test gpu based computations. -g uses the first gpu, -gg the second, ...')
     parser.add_argument(
         '-c', '--cpu', dest='test_cpu',
         required=False, action='count', default=0,
@@ -321,21 +321,34 @@ def distribution_cmds(cmds):
 
 
 def get_computers(args):
-    device_args = []
+    construct_args = []
     if args.test_np > 0:
-        device_args += [None]
-    if args.test_cpu > 0:
-        device_args += [CPU]
-    if args.test_gpu > 0:
-        device_args += [GPU]
+        construct_args += [('np', None)]
+    if HAS_PYOPENCL:
+        if args.test_cpu > 0:
+            construct_args += [(DEVICE_TYPE_MAP[CPU], CPU)]
+        if args.test_gpu > 0:
+            # The args choose which gpu, create the device to pass directly to Computer
+            device_count = 0
+            for device in get_all_devices():
+                if device.type != GPU:
+                    continue
+                device_count += 1
+                if args.test_gpu == device_count:
+                    construct_args += [(DEVICE_TYPE_MAP[GPU], device)]
+                    print('Will use GPU #%d: %s' % (device_count, device.name.strip()))
+                    break
+    else:
+        print('WARNING: No OpenCL support.')
 
-    if len(device_args) == 0:
+    if len(construct_args) == 0:
         print('No -n or -c or -g option used. Will test all.')
-        device_args = [None, CPU, GPU]
+        construct_args = [('np', None)]
+        if(HAS_PYOPENCL):
+            construct_args += [(DEVICE_TYPE_MAP[CPU], CPU), (DEVICE_TYPE_MAP[GPU], GPU)]
 
     computers = {}
-    for da in device_args:
-        c_key = 'np' if da is None else DEVICE_TYPE_MAP[da]
+    for c_key, da in construct_args:
         try:
             computers[c_key] = Computer(da)
         except Exception as e:
