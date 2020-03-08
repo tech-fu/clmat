@@ -637,7 +637,7 @@ class Computer(object):
         if is_unsigned:
             dtype_str = dtype_str[1:]
         result = getattr(self.device, 'preferred_vector_width_%s' % dtype_str)
-        if is_unsigned:
+        if is_unsigned and result > 1:
             result //= 2
         return result
 
