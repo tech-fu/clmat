@@ -422,7 +422,7 @@ def run_operation(operation_name, args, cmds,
         tmp_vars['rAF'] = tmp_vars['AF'].copy(order='F')
         t0 = time()
         for dummy in range(args.time):
-            exec(true_cmd) in tmp_vars
+            exec(true_cmd, globals(), tmp_vars)
         time_delta = time() - t0
         true_result = tmp_vars['rA']
         del tmp_vars['rA'], tmp_vars['rAF']
@@ -468,12 +468,12 @@ def run_operation(operation_name, args, cmds,
             assert 'rA' in clc_cmd  # Others not known to this loop
             tmp_vars['rA'] = tmp_vars['A'].copy()
             tmp_vars['rAF'] = tmp_vars['AF'].copy(c_contiguous=False)
-            exec(clc_cmd) in tmp_vars
+            exec(clc_cmd, globals(), tmp_vars)
             tmp_vars['rA'] = tmp_vars['A'].copy()
             tmp_vars['rAF'] = tmp_vars['AF'].copy(c_contiguous=False)
             t0 = time()
             for dummy in range(args.time):
-                exec(clc_cmd) in tmp_vars
+                exec(clc_cmd, globals(), tmp_vars)
             time_delta = time() - t0
             clc_result = tmp_vars['rA']
             del tmp_vars['rA'], tmp_vars['rAF']
