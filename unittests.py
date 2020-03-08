@@ -54,12 +54,17 @@ def test_computer_constructor():
     assert testC.queue is None
 
     if clm.HAS_PYOPENCL:
-        testC = clm.Computer(clm.CPU)
-        assert testC.use_opencl
-        assert isinstance(testC.device, cl.Device)
-        assert isinstance(testC.context, cl.Context)
-        assert isinstance(testC.queue, cl.CommandQueue)
-        assert testC.device.type == clm.CPU
+
+        if clm.has_cpu():
+            testC = clm.Computer(clm.CPU)
+            assert testC.use_opencl
+            assert isinstance(testC.device, cl.Device)
+            assert isinstance(testC.context, cl.Context)
+            assert isinstance(testC.queue, cl.CommandQueue)
+            assert testC.device.type == clm.CPU
+        else:
+            with pytest.raises(ValueError):
+                testC = clm.Computer(clm.CPU)
 
         if clm.has_gpu():
             testC = clm.Computer(clm.GPU)

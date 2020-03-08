@@ -111,6 +111,15 @@ def get_all_devices():
     return result
 
 
+def has_cpu():
+    """Return True if device with type GPU exists."""
+    all_devices = get_all_devices()
+    for device in all_devices:
+        if device.type == CPU:
+            return True
+    return False
+
+
 def has_gpu():
     """Return True if device with type GPU exists."""
     all_devices = get_all_devices()
@@ -498,7 +507,7 @@ class Computer(object):
                           self.preferred_work_group_size_multiple(kernel))]
             else:
                 result = [2,
-                          int(self.device.max_work_group_size/2)]
+                          int(self.device.max_work_group_size//2)]
         return result
 
     def _cl_elementwise_global_size(self, min_global_size, local_size):
@@ -518,13 +527,13 @@ class Computer(object):
         if dim == 2 and local_size[1] > min_global_size[1]:
             local_size[1] = int(min_global_size[1])
 
-        gs0 = int((min_global_size[0]/local_size[0])*local_size[0])
+        gs0 = int((min_global_size[0]//local_size[0])*local_size[0])
         if gs0 < min_global_size[0]:
             gs0 += local_size[0]
         if dim == 1:
             global_size = [gs0]
         else:
-            gs1 = int((min_global_size[1]/local_size[1])*local_size[1])
+            gs1 = int((min_global_size[1]//local_size[1])*local_size[1])
             if gs1 < min_global_size[1]:
                 gs1 += local_size[1]
             global_size = [gs0, gs1]

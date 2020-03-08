@@ -14,10 +14,17 @@ has_gpu = clm.has_gpu()
 A_shape_list = ['1x1', '3x4', '40x1', '1x50', '1024x1024', '1025x1101']
 B_shape_list = ['x5'] #, 'x1', 'x50', 'x1024', 'x1101']
 dtype_list = list([k.name for k in clm.ALGEBRAIC_DTYPES])
+
+gpu_id = 2 # Starts at 1
+computer_keys = ['n']
 if clm.HAS_PYOPENCL:
-    computer_keys = ['n', 'c'] + (['g'] if has_gpu else [])
+    if clm.has_cpu():
+        computer_keys += ['c']
+    if clm.has_gpu():
+        computer_keys += ['g']
 else:
     computer_keys = ['n']
+
 logical_index_list = ['GOOD', 'OOB']  # OOB = out of bounds
 slice_begin = [0, 1]
 slice_end = [-2]
