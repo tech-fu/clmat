@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
 Created on Apr 2014
@@ -300,7 +300,7 @@ def mmult_cmds(cmds):
                          'np.dot(aB,aB.T)')
     cmds['mmult_m1t_m2t'] = ('clc.mmult(B.T,A.T)', 'np.dot(B.T,A.T)',
                              'np.dot(aA,aB).T')
-    
+
     return cmds
 
 
@@ -348,7 +348,7 @@ def get_computers(args):
 
 
 def get_vars(args):
-    shapeA = map(int, args.sizeA.split('x'))
+    shapeA = tuple(map(int, args.sizeA.split('x')))
     shapeB = (shapeA[1], int(args.sizeB.split('x')[-1]))
     assert len(shapeA) == 2 and len(shapeB) == 2  # Only 2D matrices allowed.
 
@@ -381,7 +381,7 @@ def get_vars(args):
         test_vars['v'] = new_m((shapeA[1], 1)).astype(dtype)
         test_vars['vt'] = new_m((1, shapeA[1])).astype(dtype)
         # For logical comparisons it is best to use a scalar from A
-        scalar = test_vars['A'][shapeA[0]/2, shapeA[1]/2]
+        scalar = test_vars['A'][shapeA[0]//2, shapeA[1]//2]
 
         Amax = np.max(test_vars['A'])
         Amin = np.min(test_vars['A'])
