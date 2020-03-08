@@ -986,6 +986,8 @@ class Computer(object):
         else:
             lws[0] = self.device.max_work_group_size // \
                 self.preferred_work_group_size_multiple(kernel)
+        gws[0] = lws[0] * int(np.ceil(gws[0]/lws[0]))
+        gws[1] = lws[1] * int(np.ceil(gws[1]/lws[1]))
 
         kernel(self.queue, gws, lws,
                out.buffer, out.ptr_stride0, out.ptr_stride1, out.begin,
