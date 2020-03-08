@@ -129,6 +129,26 @@ def has_gpu():
     return False
 
 
+def get_gpu(gpu_idx):
+    """Get a gpu device from the list of available gpu's.
+    @type gpu_idx: int
+    @param gpu_idx: The index of the gpu in the list of gpu devices found on the system,
+    see: get_all_devices()
+    @rtype: pyopencl.Device
+    @returns: A gpu device if it exists or None if it doesn't
+    """
+    gpu = None
+    gpu_count = 0
+    for device in get_all_devices():
+        if device.type != GPU:
+            continue
+        if gpu_idx == gpu_count:
+            gpu = device
+            break
+        gpu_count += 1
+    return gpu
+
+
 def has_fission_support():
     """Returns True if pyopencl is loaded and known to have fission support."""
     if not HAS_PYOPENCL:

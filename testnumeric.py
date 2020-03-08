@@ -12,7 +12,7 @@ import sys
 import argparse
 from time import time
 import numpy as np
-from clmat import HAS_PYOPENCL, CPU, GPU, DEVICE_TYPE_MAP, REDUCTION_ENUM, Computer, Mat, get_all_devices
+from clmat import HAS_PYOPENCL, CPU, GPU, DEVICE_TYPE_MAP, REDUCTION_ENUM, Computer, Mat, get_gpu
 import warnings
 
 # Verbose levels vl must be >= to this
@@ -328,16 +328,12 @@ def get_computers(args):
         if args.test_cpu > 0:
             construct_args += [(DEVICE_TYPE_MAP[CPU], CPU)]
         if args.test_gpu > 0:
-            # The args choose which gpu, create the device to pass directly to Computer
-            device_count = 0
-            for device in get_all_devices():
-                if device.type != GPU:
-                    continue
-                device_count += 1
-                if args.test_gpu == device_count:
-                    construct_args += [(DEVICE_TYPE_MAP[GPU], device)]
-                    print('Will use GPU #%d: %s' % (device_count, device.name.strip()))
-                    break
+            device = get_gpu(args.test_gpu-1)
+            if device is None:
+                print('Could not find a gpu with the specified index: %d' % args.test_gpu)
+            else:
+                construct_args += [(DEVICE_TYPE_MAP[GPU], device)]
+                print('Will use GPU #%d: %s' % (args.test_gpu, device.name.strip()))
     else:
         print('WARNING: No OpenCL support.')
 

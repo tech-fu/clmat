@@ -15,7 +15,7 @@ A_shape_list = ['1x1', '3x4', '40x1', '1x50', '1024x1024', '1025x1101']
 B_shape_list = ['x5'] #, 'x1', 'x50', 'x1024', 'x1101']
 dtype_list = list([k.name for k in clm.ALGEBRAIC_DTYPES])
 
-gpu_id = 1 # Starts at 1
+gpu_idx = 0
 computer_keys = ['n']
 if clm.HAS_PYOPENCL:
     if clm.has_cpu():
@@ -133,7 +133,12 @@ def C(request):
     if computer_key == 'c':
         device_arg = clm.CPU
     if computer_key == 'g':
-        device_arg = clm.GPU
+        device_arg = clm.get_gpu(gpu_idx)
+        if device_arg is None:
+            print('WARNING: Could not load requested GPU: %d' % gpu_idx)
+            device_arg = clm.GPU
+        else:
+            print('Will use GPU #%d: %s' % (gpu_idx, device_arg.name.strip()))
     result = clm.Computer(device_arg)
 #    print('C: %s' % object.__repr__(result))
     return result
