@@ -99,7 +99,7 @@ class TestMatrix:
         assert MA.size == A.size
         assert MA.dtype == A.dtype
         assert MA.begin == 0
-        ptr_strides = [A.strides[0]/A.itemsize, A.strides[1]/A.itemsize]
+        ptr_strides = [A.strides[0]//A.itemsize, A.strides[1]//A.itemsize]
         if A.shape[0] == 1:
             ptr_strides[0] = 0
         if A.shape[1] == 1:

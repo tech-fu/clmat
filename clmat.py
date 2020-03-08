@@ -236,7 +236,7 @@ class Computer(object):
             max_mmult_block_size = np.sqrt(self._device.max_work_group_size)
             self._mmult_preferred_block_size = int(max_mmult_block_size)
             while self._mmult_preferred_block_size > max_mmult_block_size:
-                self._mmult_preferred_block_size /= 2
+                self._mmult_preferred_block_size //= 2
 
             self._programs = {}
         else:
@@ -489,7 +489,7 @@ class Computer(object):
                     local_size_minor = self.device.max_work_group_size
                     while local_size_major < local_size_minor:
                         local_size_major *= 2
-                        local_size_minor /= 2
+                        local_size_minor //= 2
                     result = [int(local_size_major),
                               int(local_size_minor)]
         else:
@@ -609,7 +609,7 @@ class Computer(object):
             dtype_str = dtype_str[1:]
         result = getattr(self.device, 'preferred_vector_width_%s' % dtype_str)
         if is_unsigned:
-            result /= 2
+            result //= 2
         return result
 
     def get_preferred_vector_width(self, dtype):
@@ -632,7 +632,7 @@ class Computer(object):
             return 1
         result = self.get_preferred_vector_width(dtype)
         while size % result:
-            result /= 2
+            result //= 2
         return max(result, 1)
 
     ##### Kernel Callers #####
@@ -945,7 +945,7 @@ class Computer(object):
             lws = [4]
             partial_buffer = cl.Buffer(self.context, cl.mem_flags.READ_WRITE,
                                        size=num_blocks*out_dtype.itemsize)
-            block_size = mat1.size/num_blocks
+            block_size = mat1.size//num_blocks
             kernel(self.queue, gws, lws, ONE, partial_buffer, ZERO,
                    block_size, mat1.size, mat1.buffer, mat1.begin)
         else:
@@ -984,7 +984,7 @@ class Computer(object):
         elif axis == 0 and mat1.c_contiguous:
             lws[1] = self.preferred_work_group_size_multiple(kernel)
         else:
-            lws[0] = self.device.max_work_group_size / \
+            lws[0] = self.device.max_work_group_size // \
                 self.preferred_work_group_size_multiple(kernel)
 
         kernel(self.queue, gws, lws,
@@ -1059,7 +1059,7 @@ class Computer(object):
         common_mod = mat1.shape1 % block_size
         if common_mod == 0 and mat1.dtype == mat2.dtype:
             kvw = self._optimal_vector_width(
-                mat1.shape1 / block_size,
+                mat1.shape1 // block_size,
                 self.safe_cast_non_logical(out.dtype, mat1.dtype))
             kvw = min(kvw, 4)  # dot does not support kvw > 4
         else:
@@ -1068,7 +1068,7 @@ class Computer(object):
         m2_local_size = kvw * block_size * block_size * mat2.dtype.itemsize
         while kvw > 1 and \
                 m1_local_size + m2_local_size > self.device.local_mem_size:
-            block_size /= 2
+            block_size //= 2
             m1_local_size = kvw * block_size * block_size * mat1.dtype.itemsize
             m2_local_size = kvw * block_size * block_size * mat2.dtype.itemsize
 
@@ -1124,10 +1124,10 @@ class Computer(object):
 
         shape0 = mat1.shape0
         shape1 = mat1.shape1
-        block_size_r = shape0/gws[reverse_ws]
+        block_size_r = shape0//gws[reverse_ws]
         if block_size_r*gws[reverse_ws] < shape0:
             block_size_r += 1
-        block_size_c = shape1/gws[1-reverse_ws]
+        block_size_c = shape1//gws[1-reverse_ws]
         if block_size_c*gws[1-reverse_ws] < shape1:
             block_size_c += 1
         kernel(self.queue, gws, lws, partial.buffer, shape0, shape1,
@@ -2003,7 +2003,7 @@ class Mat(object):
                              % (begin, end, step))
         if step != 1:
             new_axis_size += 1
-            new_axis_size /= step
+            new_axis_size //= step
         return (_size_t(begin), _size_t(step), _size_t(end),
                 _size_t(new_axis_size))
 
